@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PrecipitationDataApp_WPF"
         mc:Ignorable="d"
-        Title="Main Window" Height="600" Width="800"
+        Title="Main Window" Height="600" Width="900"
         ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible">
     
     <Window.Resources>
@@ -30,7 +30,7 @@
             <Setter Property="HorizontalAlignment" Value="Left"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="5,5,0,0"/>
+            <Setter Property="Margin" Value="5,5,5,0"/>
         </Style>
     </Window.Resources>
     
@@ -39,17 +39,16 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="450"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Precipitation Data Importer"/>
 
-        <Grid Grid.Row="1" Grid.Column="0">
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="450">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -65,7 +64,12 @@
             </TextBlock>
         </Grid>
 
-        <Grid x:Name="FileDataTextGrid" Grid.Row="2" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,20,20">
+        <Grid x:Name="FileDataTextGrid" Grid.Row="1" Visibility="Hidden" 
+              HorizontalAlignment="Center" 
+              VerticalAlignment="Top"
+              MaxWidth="400"
+              Background="#efeffe"
+              Margin="0,20,20,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -110,7 +114,7 @@
 
         
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" MaxWidth="450">
             <Button Grid.Row="3" Grid.Column="0" x:Name="ProcessBtn"  
                 IsEnabled="False" Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="ProcessBtn_Click">
@@ -119,7 +123,7 @@
             <Button  x:Name="SaveBtn" IsEnabled="False"  
                 Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="SaveBtn_Click">
-                Save to Database
+                Database Insert 
             </Button>
             <Button  x:Name="DataViewerBtn" 
                 Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
@@ -127,18 +131,34 @@
                Data Viewer
             </Button>
         </StackPanel>
-    
 
-        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="4" 
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Vertical" TextBlock.LineHeight="23" Margin="10,10,0,0">
+            <TextBlock x:Name="ErrorsLinkText" Visibility="Hidden">
+            <Hyperlink x:Name="ShowErrorsBtn" Click="ShowErrorsBtn_Click">
+                Print errors in console
+            </Hyperlink>
+            </TextBlock>
+            <TextBlock x:Name="ViewDatabaseFileText" Visibility="Hidden">
+            <Hyperlink x:Name="ViewDatabaseFileBtn" Click="ViewDatabaseFileBtn_Click">
+                Export Database
+            </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" 
                       x:Name="ConsoleScroller"
-                      Background="Black" Foreground="AntiqueWhite" VerticalAlignment="Stretch" Padding="10">
+                      Background="Black"
+                      Foreground="AntiqueWhite" 
+                      VerticalAlignment="Top" 
+                      Height="300"
+                      Padding="10">
             <StackPanel x:Name="OutputPanel"  TextBlock.FontSize="10">
                 <TextBlock Text="Output:"/>
             </StackPanel>
         </ScrollViewer>
 
-        <Button x:Name="ClearConsoleBtn" Grid.Row="5" Grid.Column="1" Click="ClearConsoleBtn_Click" Style="{StaticResource GeneralBtnStyle}"
-                HorizontalAlignment="Right" Width="100" Margin="0,5,0,0">
+        <Button x:Name="ClearConsoleBtn" Grid.Row="3" Grid.Column="1" Click="ClearConsoleBtn_Click" Style="{StaticResource GeneralBtnStyle}"
+                HorizontalAlignment="Right" Width="100" Margin="0,5,0,0" VerticalAlignment="Top">
             Clear Console
         </Button>
     </Grid>
