@@ -72,6 +72,15 @@ namespace PrecipitationDataHandling
                 .ToList();
 
         }
+
+        public static string ToOutputString(this (float, float) tuple)
+        {
+            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
+        }
+        public static string ToOutputString(this (int, int) tuple)
+        {
+            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
+        }
     }
 
 

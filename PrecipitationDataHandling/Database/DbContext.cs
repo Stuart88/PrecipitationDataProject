@@ -30,6 +30,12 @@ namespace PrecipitationDataHandling.Database
             return db.Insert(adding);
         }
 
+        public static void TruncateDataPointsTable()
+        {
+            db.DeleteAll<DataPoint>();
+        }
+
+       
         public static int BulkInsertDataPoints(List<DataPoint> dataPoints)
         {
             return db.InsertAll(dataPoints, typeof(DataPoint));

@@ -26,21 +26,43 @@ namespace PrecipitationDataHandling
 
         private int CurrentLineNumber = 0;
         private List<ErrorLine> ErrorLines = new List<ErrorLine>();
-        private PrecipiationFileData FileData = new PrecipiationFileData();
+        public PrecipiationFileData FileData = new PrecipiationFileData();
         private string FilePath;
 
         #endregion Private Fields
 
         #region Public Constructors
-
         public FileHandler(string filePath, ErrorHandlingEnum errorHandling = ErrorHandlingEnum.Bypass)
         {
             FilePath = filePath;
             ErrorHandling = errorHandling;
             DbContext.InitialiseDataBase();
         }
+        public FileHandler(ErrorHandlingEnum errorHandling = ErrorHandlingEnum.Bypass)
+        {
+            ErrorHandling = errorHandling;
+            DbContext.InitialiseDataBase();
+        }
+        public int ErrorCount {get{ return ErrorLines.Count; } }
+
+        public string GetErrorLinesData()
+        {
+            string returnString = "";
+
+            foreach(var e in ErrorLines)
+            {
+                returnString += string.Format("Line: {0}\nReason: {1}\nRaw Data: {2}\n\n", e.LineNumber, e.Reason, e.Line);
+            }
+
+            return returnString;
+        }
 
         #endregion Public Constructors
+
+        public void  SetInputFilePath(string filePath)
+        {
+            FilePath = filePath;
+        }
 
         /// <summary>
         /// Saves precipitation data to Excel file
@@ -80,34 +102,67 @@ namespace PrecipitationDataHandling
         #endregion Public Properties
 
         #region Public Methods
+        /// <summary>
+        /// Read top lines of file to find title and other data.
+        /// </summary>
+        /// <returns></returns>
+        public (bool ok, string message) ParseBasicFileData()
+        {
+            try
+            {
+                _ = PreliminaryProcess(File.ReadAllLines(FilePath));
 
-        public void CreateDataPoints()
+                return (true, "");
+            }
+            catch (Exception e)
+            {
+                return (false, e.Message);
+            }
+        }
+
+
+        public (bool ok, string message) CreateDataPoints()
         {
             if (!FileExists)
-                throw new FileHandlerException("File not found!");
+                return (false, "File not found!");
 
-            string[] file = File.ReadAllLines(FilePath);
+            FileData.DataPoints.Clear();
+            ErrorLines.Clear();
 
-            List<(string line, bool isGridRedHeader)> gridRefLines = PreliminaryProcess(file);
-
-            int xRef = 0;
-            int yRef = 0;
-            int currentYear = FileData.Years.Min;
-
-            foreach (var g in gridRefLines)
+            try
             {
-                if (g.isGridRedHeader)
+                string[] file = File.ReadAllLines(FilePath);
+
+                CurrentLineNumber = 0;
+                List<(string line, bool isGridRedHeader)> gridRefLines = PreliminaryProcess(file);
+
+                int xRef = 0;
+                int yRef = 0;
+                int currentYear = FileData.Years.Min;
+
+                foreach (var g in gridRefLines)
                 {
-                    (xRef, yRef) = Functions.ParseEntry_Int(g.line, "Grid-ref=");
-                    //reset back to min year.
-                    currentYear = FileData.Years.Min;
-                    continue;
+                    CurrentLineNumber++;
+
+                    if (g.isGridRedHeader)
+                    {
+                        (xRef, yRef) = Functions.ParseEntry_Int(g.line, "Grid-ref=");
+                        //reset back to min year.
+                        currentYear = FileData.Years.Min;
+                        continue;
+                    }
+                    else
+                    {
+                        FileData.DataPoints.AddRange(ProcessGridRefValues(g.line, xRef, yRef, currentYear));
+                        currentYear++;
+                    }
                 }
-                else
-                {
-                    FileData.DataPoints.AddRange(ProcessGridRefValues(g.line, xRef, yRef, currentYear));
-                    currentYear++;
-                }
+
+                return (true, "");
+            }
+            catch (Exception e)
+            {
+                return (false, e.Message);
             }
         }
 
@@ -123,11 +178,22 @@ namespace PrecipitationDataHandling
             }
         }
 
-        public (int saved, int missed) SaveData()
+        public (int saved, int missed, bool ok, string message) SaveData()
         {
-            int savedAmount = Database.DbContext.BulkInsertDataPoints(FileData.DataPoints);
 
-            return (savedAmount, FileData.DataPoints.Count - savedAmount);
+            try
+            {
+                DbContext.TruncateDataPointsTable();    // Do this to avoid re-saving all the data each time SaveData() is called. 
+                                                        //This is obviously unrealistic, but it's good enough for what this application is supposed to do.
+
+                int savedAmount = DbContext.BulkInsertDataPoints(FileData.DataPoints);
+
+                return (savedAmount, FileData.DataPoints.Count - savedAmount, true, "");
+            }
+            catch(Exception e)
+            {
+                return (0, 0, false, e.Message);
+            }
         }
 
         #endregion Public Methods
@@ -140,42 +206,54 @@ namespace PrecipitationDataHandling
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        private List<(string line, bool isGridRedHeader)> PreliminaryProcess(string[] file)
+        private List<(string line, bool isGridRedHeader)> PreliminaryProcess(string[] file, bool headerLinesOnly = false)
         {
             ProcessingLineNumber currentLine = ProcessingLineNumber.TitleLine;
             List<(string line, bool isGridRedHeader)> returnList = new List<(string line, bool isGridRedHeader)>();
 
             foreach (string line in file)    // Process by line.
             {
-                CurrentLineNumber++;
+               
 
                 switch (currentLine)
                 {
                     case ProcessingLineNumber.TitleLine:
+                        CurrentLineNumber++;
                         FileData.FileTitle = line;
                         currentLine = ProcessingLineNumber.LineTwo;
                         break;
 
                     case ProcessingLineNumber.LineTwo:
+                        CurrentLineNumber++;
                         currentLine = ProcessingLineNumber.CRU;
                         break;
 
                     case ProcessingLineNumber.CRU:
+                        CurrentLineNumber++;
                         currentLine = ProcessingLineNumber.LongLatGrid;
                         break;
 
                     case ProcessingLineNumber.LongLatGrid:
+                        CurrentLineNumber++;
                         ProcessLine_LangLatGridLine(line);
                         currentLine = ProcessingLineNumber.BoxesYearsMulti;
                         break;
 
                     case ProcessingLineNumber.BoxesYearsMulti:
+                        CurrentLineNumber++;
                         ProcessLine_BoxesYearsMulti(line);
                         currentLine = ProcessingLineNumber.GridRefLines;
                         break;
 
                     case ProcessingLineNumber.GridRefLines:
-                        returnList.Add((line, line.Contains("Grid-ref=")));
+                        if (headerLinesOnly)//terminate early
+                        {
+                            return returnList;
+                        }
+                        else
+                        {
+                            returnList.Add((line, line.Contains("Grid-ref=")));
+                        }
                         break;
                 }
             }
