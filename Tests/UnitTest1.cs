@@ -61,7 +61,7 @@ namespace UnitTests
             if (handler.FileExists)
             {
                 handler.ErrorHandling = ErrorHandlingEnum.Bypass;
-                
+
                 handler.CreateDataPoints();
 
                 var saveresult = handler.SaveData();
@@ -72,5 +72,5 @@ namespace UnitTests
         }
     }
 
-   
+
 }
