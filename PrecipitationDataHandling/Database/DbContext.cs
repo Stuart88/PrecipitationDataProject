@@ -9,11 +9,11 @@ namespace PrecipitationDataHandling.Database
 {
     internal static class DbContext
     {
-        private static SQLiteConnection db = new SQLiteConnection("PrecipitationDB.db");
+        private static SQLiteAsyncConnection db = new SQLiteAsyncConnection("PrecipitationDB.db");
 
         public static void InitialiseDataBase()
         {
-            _ = db.CreateTable<DataPoint>();
+            _ = db.CreateTableAsync<DataPoint>();
         }
 
         public static void DeleteDataPoint(DataPoint data)
@@ -21,24 +21,24 @@ namespace PrecipitationDataHandling.Database
             if (data.ID == 0)
                 throw new Exception("Entry has no ID!");
 
-            _ = db.Delete(data);
+            _ = db.DeleteAsync(data);
         }
-        public static int InsertDataPoint(DataPoint data)
+        public static async Task<int> InsertDataPoint(DataPoint data)
         {
             DataPoint adding = new DataPoint(data);
 
-            return db.Insert(adding);
+            return await db.InsertAsync(adding);
         }
 
         public static void TruncateDataPointsTable()
         {
-            db.DeleteAll<DataPoint>();
+            _ = db.DeleteAllAsync<DataPoint>();
         }
 
        
-        public static int BulkInsertDataPoints(List<DataPoint> dataPoints)
+        public static async Task<int> BulkInsertDataPoints(List<DataPoint> dataPoints)
         {
-            return db.InsertAll(dataPoints, typeof(DataPoint));
+            return await db.InsertAllAsync(dataPoints, typeof(DataPoint));
         }
     }
 }

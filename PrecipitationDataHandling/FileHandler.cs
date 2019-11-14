@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PrecipitationDataHandling
 {
@@ -178,15 +179,14 @@ namespace PrecipitationDataHandling
             }
         }
 
-        public (int saved, int missed, bool ok, string message) SaveData()
+        public async Task<(int saved, int missed, bool ok, string message)> SaveData()
         {
 
             try
             {
                 DbContext.TruncateDataPointsTable();    // Do this to avoid re-saving all the data each time SaveData() is called. 
                                                         //This is obviously unrealistic, but it's good enough for what this application is supposed to do.
-
-                int savedAmount = DbContext.BulkInsertDataPoints(FileData.DataPoints);
+                int savedAmount = await DbContext.BulkInsertDataPoints(FileData.DataPoints);
 
                 return (savedAmount, FileData.DataPoints.Count - savedAmount, true, "");
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PrecipitationDataHandling;
+using PrecipitationDataHandling.Database;
 
 namespace PrecipitationDataApp_WPF
 {
@@ -27,6 +29,13 @@ namespace PrecipitationDataApp_WPF
         public MainWindow()
         {
             InitializeComponent();
+
+            Loaded += async (s, e) =>
+            {
+                ViewDatabaseFileText.Visibility = await DbQuery.HasData()
+                    ? Visibility.Visible
+                    : Visibility.Hidden;
+            };
         }
 
         private void FileSelectBtn_Click(object sender, RoutedEventArgs e)
@@ -100,7 +109,7 @@ namespace PrecipitationDataApp_WPF
                 if(FileHandler.ErrorCount > 0)
                 {
                     ConsoleLog(string.Format("Found {0} errors." , FileHandler.ErrorCount));
-                    ConsoleLog(FileHandler.GetErrorLinesData());
+                    ErrorsLinkText.Visibility = Visibility.Visible;
                 }
 
                 SaveBtn.IsEnabled = true;
@@ -113,15 +122,17 @@ namespace PrecipitationDataApp_WPF
             }
         }
 
-        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            SaveBtn.IsEnabled = false;
             ConsoleLog("\n\nSaving...");
 
-            var saveResult = FileHandler.SaveData();
+            var saveResult = await FileHandler.SaveData();
 
             if (saveResult.ok)
             {
                 //DataViewerBtn.IsEnabled = true;
+                ViewDatabaseFileText.Visibility = Visibility.Visible;
                 ConsoleLog("Save OK! ");
                 ConsoleLog(string.Format("Saved {0} entries", saveResult.saved));
             }
@@ -130,12 +141,35 @@ namespace PrecipitationDataApp_WPF
                 ConsoleLog("Error! ");
                 ConsoleLog(saveResult.message);
             }
+            SaveBtn.IsEnabled = true;
         }
 
         private void DataViewerBtn_Click(object sender, RoutedEventArgs e)
         {
             DataViewer dataViewer = new DataViewer();
             dataViewer.Show();
+        }
+
+        private void ShowErrorsBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ConsoleLog(FileHandler.GetErrorLinesData());
+        }
+
+        private void ViewDatabaseFileBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog saveDialog = new Microsoft.Win32.SaveFileDialog();
+            saveDialog.FileName = "PrecipitationDB"; 
+            saveDialog.DefaultExt = ".db";
+            saveDialog.Filter = "Database fle (.db)|*.db";
+            //saveDialog.CheckFileExists = false;
+            //saveDialog.CheckFileExists = false;
+            //saveDialog.CreatePrompt = true;
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                
+                File.Copy(System.IO.Path.Combine(Environment.CurrentDirectory, "PrecipitationDB.db"), saveDialog.FileName, true);
+            }
         }
     }
 }

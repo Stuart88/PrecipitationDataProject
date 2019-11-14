@@ -24,7 +24,25 @@ namespace PrecipitationDataApp_WPF
         public List<DataPoint> DataPoints { get; set; }
         public DataViewer()
         {
-            DataPoints = DbQuery.GetDataPoints();
+            
+            Loaded += async (s, e) => 
+            { 
+                DataPoints = await DbQuery.GetDataPoints();
+
+                if(DataPoints.Count == 0)
+                {
+                    LoadingText.Text = "No data!";
+                }
+                else
+                {
+                    LoadingText.Visibility = Visibility.Collapsed;
+                    DataListView.Visibility = Visibility.Visible;
+
+                    DataListView.ItemsSource = DataPoints;
+                }
+
+               
+            };
 
             InitializeComponent();
 

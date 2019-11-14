@@ -10,15 +10,19 @@ namespace PrecipitationDataHandling.Database
 {
     public static class DbQuery
     {
-        private static SQLiteConnection db = new SQLiteConnection("PrecipitationDB.db");
+        private static SQLiteAsyncConnection db = new SQLiteAsyncConnection("PrecipitationDB.db");
 
-        public static List<DataPoint> GetDataPoints()
+        public static async Task<bool> HasData()
         {
-            return db.Table<DataPoint>().ToList();
+            return await db.Table<DataPoint>().CountAsync() > 0;
         }
-        public static List<DataPoint> GetDataPoints(DateTime startDate, DateTime endDate)
+        public static async Task<List<DataPoint>> GetDataPoints()
         {
-            return db.Table<DataPoint>().Where(p => p.Date >= startDate && p.Date <= endDate).ToList();
+            return await db.Table<DataPoint>().ToListAsync();
+        }
+        public static async Task<List<DataPoint>> GetDataPoints(DateTime startDate, DateTime endDate)
+        {
+            return await db.Table<DataPoint>().Where(p => p.Date >= startDate && p.Date <= endDate).ToListAsync();
         }
 
     }
