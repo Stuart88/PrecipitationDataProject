@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PrecipitationDataHandling;
@@ -54,7 +55,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSFileHandler()
+        public void TestFileHandlerCreateData()
         {
             FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
 
@@ -68,6 +69,25 @@ namespace UnitTests
 
 
                 var result = handler.GetDataPoints();
+            }
+        }
+
+        [TestMethod]
+        public void TestFileHandler_DataToExcel()
+        {
+            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
+
+            if (handler.FileExists)
+            {
+                handler.ErrorHandling = ErrorHandlingEnum.Bypass;
+
+                handler.CreateDataPoints();
+
+                string savedSpreadsheetLocation = handler.ToExcelSheet("precipitation_data");
+
+                bool fileExists = File.Exists(savedSpreadsheetLocation);
+
+                Assert.IsTrue(fileExists);
             }
         }
     }

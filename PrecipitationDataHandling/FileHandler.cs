@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PrecipitationDataHandling.Database;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,10 +37,22 @@ namespace PrecipitationDataHandling
         {
             FilePath = filePath;
             ErrorHandling = errorHandling;
-            Database.DbContext.InitialiseDataBase();
+            DbContext.InitialiseDataBase();
         }
 
         #endregion Public Constructors
+
+        /// <summary>
+        /// Saves precipitation data to Excel file
+        /// </summary>
+        /// <param name="outputFilename">Desired file name. Does NOT require file extension</param>
+        /// <returns>Saved file path</returns>
+        public string ToExcelSheet(string outputFilename)
+        {
+            List<DataPointExport> dataPoints_excel = FileData.DataPoints.Take(1000).Select(s => new DataPointExport(s)).ToList();
+
+            return Exporter.ToExcelFile(Exporter.ConvertToDataTable(dataPoints_excel), outputFilename);
+        }
 
         #region Private Enums
 
