@@ -17,5 +17,3 @@ A quick WPF application for reading, parsing, saving and presenting precipitatio
   
   - To get a feel for the steps the project takes when parsing and saving the data, it would probably be easiest 
 to run and step through the `TestFileHandler_SaveData` method of the **Tests** project.
-
-     - You'll need to manually set the correct file path in the `FileHandler` constructor
