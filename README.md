@@ -13,6 +13,6 @@ A quick WPF application for reading, parsing, saving and presenting precipitatio
   - Run via **Start/Debug**
 
 ## Assessor Notes 
-  - File parsing and data handling happens primarily in `FileHandler.cs`, with a handful extra methods held in `Functions.cs`
+  - File parsing and data handling happens primarily in `FileHandler.cs`, with a handful of extra methods held in `Functions.cs`
   - To get a feel for the steps the project takes when parsing and saving the data, it would probably be easiest 
 to run and step through the `TestFileHandler_SaveData` method of the **Tests** project.
