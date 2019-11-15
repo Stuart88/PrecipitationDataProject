@@ -89,7 +89,6 @@ namespace PrecipitationDataApp_WPF
                     MultiText.Text = FileHandler.FileData.Multi.ToString();
                     MissingText.Text = FileHandler.FileData.Missing.ToString();
 
-                    //FileDataTextGrid.Visibility = Visibility.Visible;
                     ProcessBtn.IsEnabled = true;
 
                     ConsoleLog("File looks okay! Ready to process.");
@@ -98,7 +97,6 @@ namespace PrecipitationDataApp_WPF
                 {
                     _ = MessageBox.Show(preliminaryCheck.message, "File Error!");
                     ConsoleLog(preliminaryCheck.message);
-                    //FileDataTextGrid.Visibility = Visibility.Hidden;
                     ProcessBtn.Visibility = Visibility.Hidden;
                 }
             }
@@ -114,7 +112,7 @@ namespace PrecipitationDataApp_WPF
             string helpString = "\nPrecpitation Data File Parser\n\n" +
                "Instructions:\n" +
                "1. Select file\n" +
-               "2. Process Data\n" +
+               "2. Parse Data\n" +
                "3. Insert into Database\n" +
                "4. View in Data Viewer\n\n" +
                "Error Handling Options:\n\n" +
@@ -166,6 +164,8 @@ namespace PrecipitationDataApp_WPF
 
         private async void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
+            FileSelectBtn.IsEnabled = false;
+            ProcessBtn.IsEnabled = false;
             SaveBtn.IsEnabled = false;
             DataViewerBtn.IsEnabled = false;
 
@@ -185,6 +185,8 @@ namespace PrecipitationDataApp_WPF
                 ConsoleLog("Error! ");
                 ConsoleLog(saveResult.message);
             }
+            FileSelectBtn.IsEnabled = true;
+            ProcessBtn.IsEnabled = true;
             SaveBtn.IsEnabled = true;
             DataViewerBtn.IsEnabled = true;
         }

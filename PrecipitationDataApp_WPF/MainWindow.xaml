@@ -123,14 +123,14 @@
         </StackPanel>
 
         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" MaxWidth="450">
-            <Button Grid.Row="1" Style="{StaticResource GeneralBtnStyle}"
+            <Button x:Name="FileSelectBtn" Grid.Row="1" Style="{StaticResource GeneralBtnStyle}"
                     Click="FileSelectBtn_Click">
                 Select File
             </Button>
             <Button  x:Name="ProcessBtn"
                 IsEnabled="False" Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="ProcessBtn_Click">
-                Process Data
+                Parse Data
             </Button>
             <Button  x:Name="SaveBtn" IsEnabled="False"
                 Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
@@ -147,7 +147,7 @@
         <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Vertical" TextBlock.LineHeight="23" Margin="10,10,0,0">
             <TextBlock x:Name="ErrorsLinkText" Visibility="Hidden">
             <Hyperlink x:Name="ShowErrorsBtn" Click="ShowErrorsBtn_Click">
-                Print errors in console
+                Print errors to console
             </Hyperlink>
             </TextBlock>
             <TextBlock x:Name="ViewDatabaseFileText" Visibility="Hidden">
