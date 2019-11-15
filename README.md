@@ -16,4 +16,4 @@ A quick WPF application for reading, parsing, saving and presenting precipitatio
   - File parsing and data handling happens primarily in `FileHandler.cs`, with a handful of extra methods held in `Functions.cs`
   - To get a feel for the steps the project takes when parsing and saving the data, it would probably be easiest 
 to run and step through the `TestFileHandler_SaveData` method of the **Tests** project.
-     - You'll need to change the file path in the `FileHandler` constructor
+     - Be sure to set the correct file path in the `FileHandler` constructor
