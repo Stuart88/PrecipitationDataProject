@@ -1,16 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PrecipitationDataHandling;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
     [TestClass]
     public class UnitTest1
     {
+        #region Methods
+
+        [TestMethod]
+        public void TestFileHandler_CreateData()
+        {
+            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
+
+            if (handler.FileExists)
+            {
+                handler.ErrorHandling = ErrorHandlingEnum.Bypass;
+
+                handler.CreateDataPoints();
+
+                var saveresult = handler.CreateDataPoints();
+
+                Assert.IsTrue(saveresult.ok);
+                Assert.IsTrue(handler.DataCount > 0);
+            }
+        }
+
+        [TestMethod]
+        public void TestFileHandler_FileInputError()
+        {
+            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\non-existent-file.pre");
+
+            var result = handler.CreateDataPoints();
+
+            Assert.AreEqual((false, "File not found!"), result);
+        }
+
+        [TestMethod]
+        public async Task TestFileHandler_SaveData()
+        {
+            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
+
+            if (handler.FileExists)
+            {
+                handler.ErrorHandling = ErrorHandlingEnum.Bypass;
+
+                handler.CreateDataPoints();
+
+                var saveresult = await handler.SaveData();
+
+                Assert.IsTrue(saveresult.ok);
+                Assert.IsTrue(saveresult.totalSaved > 0);
+                Assert.IsTrue(saveresult.missed == 0);
+            }
+        }
+
         [TestMethod]
         public void TestParseEntry()
         {
@@ -54,54 +102,6 @@ namespace UnitTests
             Assert.IsTrue(Enumerable.SequenceEqual(expected, result));
         }
 
-        [TestMethod]
-        public async void TestFileHandler_SaveData()
-        {
-            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
-
-            if (handler.FileExists)
-            {
-                handler.ErrorHandling = ErrorHandlingEnum.Bypass;
-
-                handler.CreateDataPoints();
-
-                var saveresult = await handler.SaveData();
-
-                Assert.IsTrue(saveresult.ok);
-                Assert.IsTrue(saveresult.totalSaved > 0);
-                Assert.IsTrue(saveresult.missed == 0);
-
-                
-            }
-        }
-
-        public void TestFileHandler_CreateData()
-        {
-            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
-
-            if (handler.FileExists)
-            {
-                handler.ErrorHandling = ErrorHandlingEnum.Bypass;
-
-                handler.CreateDataPoints();
-
-                var saveresult =  handler.CreateDataPoints();
-
-                Assert.IsTrue(saveresult.ok);
-                Assert.IsTrue(handler.DataCount > 0);
-            }
-        }
-
-        [TestMethod]
-        public void TestFileHandler_FileInputError()
-        {
-            FileHandler handler = new FileHandler(@"G:\C#\JBA Test\non-existent-file.pre");
-
-            var result = handler.CreateDataPoints();
-
-            Assert.AreEqual((false, "File not found!"), result);
-        }
+        #endregion Methods
     }
-
-
 }

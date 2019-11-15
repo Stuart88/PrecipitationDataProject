@@ -193,8 +193,6 @@ namespace PrecipitationDataHandling
             FilePath = filePath;
         }
 
-       
-
         /// <summary>
         /// Returns extracted grid ref data
         /// </summary>
@@ -380,28 +378,6 @@ namespace PrecipitationDataHandling
         #endregion Methods
     }
 
-    internal class ErrorLine
-    {
-        #region Constructors
-
-        public ErrorLine(int lineNum, string line, string reason = "")
-        {
-            LineNumber = lineNum;
-            Line = line;
-            Reason = reason;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public string Line { get; set; }
-        public int LineNumber { get; set; }
-        public string Reason { get; set; }
-
-        #endregion Properties
-    }
-
     [Serializable]
     public class FileHandlerException : Exception
     {
@@ -424,5 +400,27 @@ namespace PrecipitationDataHandling
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 
         #endregion Constructors
+    }
+
+    internal class ErrorLine
+    {
+        #region Constructors
+
+        public ErrorLine(int lineNum, string line, string reason = "")
+        {
+            LineNumber = lineNum;
+            Line = line;
+            Reason = reason;
+        }
+
+        #endregion Constructors
+
+        #region Properties
+
+        public string Line { get; set; }
+        public int LineNumber { get; set; }
+        public string Reason { get; set; }
+
+        #endregion Properties
     }
 }

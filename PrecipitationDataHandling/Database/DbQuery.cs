@@ -7,7 +7,13 @@ namespace PrecipitationDataHandling.Database
 {
     public static class DbQuery
     {
+        #region Fields
+
         private static SQLiteAsyncConnection db = new SQLiteAsyncConnection("PrecipitationDB.db");
+
+        #endregion Fields
+
+        #region Methods
 
         public static async Task<List<DataPoint>> GetDataPoints()
         {
@@ -25,5 +31,7 @@ namespace PrecipitationDataHandling.Database
         {
             return await db.Table<DataPoint>().CountAsync() > 0;
         }
+
+        #endregion Methods
     }
 }

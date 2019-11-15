@@ -1,19 +1,23 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SQLite;
 
 namespace PrecipitationDataHandling.Database
 {
     internal static class DbContext
     {
+        #region Fields
+
         private static SQLiteAsyncConnection db = new SQLiteAsyncConnection("PrecipitationDB.db");
 
-        public static void InitialiseDataBase()
+        #endregion Fields
+
+        #region Methods
+
+        public static async Task<int> BulkInsertDataPoints(List<DataPoint> dataPoints)
         {
-            _ = db.CreateTableAsync<DataPoint>();
+            return await db.InsertAllAsync(dataPoints, typeof(DataPoint));
         }
 
         public static void DeleteDataPoint(DataPoint data)
@@ -23,6 +27,12 @@ namespace PrecipitationDataHandling.Database
 
             _ = db.DeleteAsync(data);
         }
+
+        public static void InitialiseDataBase()
+        {
+            _ = db.CreateTableAsync<DataPoint>();
+        }
+
         public static async Task<int> InsertDataPoint(DataPoint data)
         {
             DataPoint adding = new DataPoint(data); // ensure new data point (no ID)
@@ -35,10 +45,6 @@ namespace PrecipitationDataHandling.Database
             _ = db.DeleteAllAsync<DataPoint>();
         }
 
-       
-        public static async Task<int> BulkInsertDataPoints(List<DataPoint> dataPoints)
-        {
-            return await db.InsertAllAsync(dataPoints, typeof(DataPoint));
-        }
+        #endregion Methods
     }
 }

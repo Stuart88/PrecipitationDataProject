@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PrecipitationDataHandling
 {
     public static class Functions
     {
+        #region Methods
+
         /// <summary>
         /// <para>Extracts and parses numerical data into Tuple(float,float)</para>
         /// <para>e.g. "Long=-180.00, 180.00"</para>
@@ -48,15 +47,6 @@ namespace PrecipitationDataHandling
                 .ToTuple();
         }
 
-        public static (float, float) ToTuple(this float[] data)
-        {
-            return (data[0], data[1]);
-        }
-        public static (int, int) ToTuple(this int[] data)
-        {
-            return (data[0], data[1]);
-        }
-
         /// <summary>
         /// Takes a given line of precipitation data values and converts them into an array of ints
         /// </summary>
@@ -64,22 +54,11 @@ namespace PrecipitationDataHandling
         /// <returns>int[] {3020, 2820, 3040, 2880, 1740, 1360,  980,  990, 1410, 1770, 2580, 2630}</returns>
         public static List<int> SplitLineIntoValues(string line)
         {
-
             return line.Replace("\t", " ").Replace("\n", " ") // replace tab spacing and newlines with whitespace
                 .Split(' ')
                 .Where(s => !string.IsNullOrEmpty(s))
                 .Select(s => int.Parse(s))
                 .ToList();
-
-        }
-
-        public static string ToOutputString(this (float, float) tuple)
-        {
-            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
-        }
-        public static string ToOutputString(this (int, int) tuple)
-        {
-            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
         }
 
         public static string[] ToArray(this MatchCollection matches)
@@ -93,7 +72,27 @@ namespace PrecipitationDataHandling
 
             return result;
         }
+
+        public static string ToOutputString(this (float, float) tuple)
+        {
+            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
+        }
+
+        public static string ToOutputString(this (int, int) tuple)
+        {
+            return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
+        }
+
+        public static (float, float) ToTuple(this float[] data)
+        {
+            return (data[0], data[1]);
+        }
+
+        public static (int, int) ToTuple(this int[] data)
+        {
+            return (data[0], data[1]);
+        }
+
+        #endregion Methods
     }
-
-
 }

@@ -7,148 +7,140 @@
         mc:Ignorable="d"
         Title="Main Window" Height="600" Width="900"
         ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Visible">
-    
+
     <Window.Resources>
         <Style TargetType="Button" x:Key="GeneralBtnStyle">
-            <Setter Property="Background" Value="CornflowerBlue"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="Width" Value="90"/>
-            <Setter Property="Height" Value="25"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="CornflowerBlue" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Width" Value="90" />
+            <Setter Property="Height" Value="25" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
         <Style TargetType="TextBlock" x:Key="FileDataLabel">
-            <Setter Property="Foreground" Value="#444"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="5,5,0,0"/>
+            <Setter Property="Foreground" Value="#444" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="5,5,0,0" />
         </Style>
         <Style TargetType="TextBlock" x:Key="FileDataText">
-            <Setter Property="Foreground" Value="Gray"/>
-            <Setter Property="HorizontalAlignment" Value="Left"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Margin" Value="5,5,5,0"/>
+            <Setter Property="Foreground" Value="Gray" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="5,5,5,0" />
         </Style>
     </Window.Resources>
-    
+
     <Grid Margin="20" VerticalAlignment="Stretch" MinHeight="450">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="450"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="450" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-
-        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="450" VerticalAlignment="Stretch" >
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="450" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Padding="10"
                     Margin="10"
                     Background="#eee">
                 <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Precipitation Data File Parser" 
+                    <TextBlock Text="Precipitation Data File Parser"
                            FontSize="25"
-                           VerticalAlignment="Center" 
-                           HorizontalAlignment="Center"/>
-
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center" />
                 </StackPanel>
             </Border>
-            
-          
-
         </Grid>
 
         <Grid x:Name="FileDataTextGrid" Grid.Row="1"
-              HorizontalAlignment="Stretch" 
+              HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"
               MaxWidth="400"
               Background="#efeffe"
               Margin="0,20,20,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Title" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TitleText" Style="{StaticResource FileDataText}" FontWeight="Bold"/>
-            
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Longitude" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="LongText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Latitude" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="LatText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Grid X,Y" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="GridXyText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Boxes" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="BoxesText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Years" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="5" Grid.Column="1" x:Name="YearsText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="Multi" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="6" Grid.Column="1" x:Name="MultiText" Style="{StaticResource FileDataText}"/>
-            
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Missing" Style="{StaticResource FileDataLabel}"/>
-            <TextBlock Grid.Row="7" Grid.Column="1" x:Name="MissingText" Style="{StaticResource FileDataText}"/>
-            
-            
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Title" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TitleText" Style="{StaticResource FileDataText}" FontWeight="Bold" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Longitude" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="LongText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Latitude" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="LatText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Grid X,Y" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="GridXyText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Boxes" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="BoxesText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Years" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="5" Grid.Column="1" x:Name="YearsText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Multi" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="6" Grid.Column="1" x:Name="MultiText" Style="{StaticResource FileDataText}" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Missing" Style="{StaticResource FileDataLabel}" />
+            <TextBlock Grid.Row="7" Grid.Column="1" x:Name="MissingText" Style="{StaticResource FileDataText}" />
         </Grid>
 
         <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="10">
-            <TextBlock Text="Error Handling: " VerticalAlignment="Center"/>
+            <TextBlock Text="Error Handling: " VerticalAlignment="Center" />
             <RadioButton GroupName="ErrorOptions" IsChecked="True" Content="Fail on error" Checked="RadioButton_Checked" Tag="Fail"  VerticalAlignment="Center"
                          ToolTipService.ToolTip="Program will terminate with an error message if any data cannot be parsed"
-                         Margin="10,0,10,0"/>
-            <RadioButton GroupName="ErrorOptions" IsChecked="False" Content="Bypass errors" Checked="RadioButton_Checked" Tag="Bypass"  VerticalAlignment="Center" 
+                         Margin="10,0,10,0" />
+            <RadioButton GroupName="ErrorOptions" IsChecked="False" Content="Bypass errors" Checked="RadioButton_Checked" Tag="Bypass"  VerticalAlignment="Center"
                          ToolTipService.ToolTip="Skip lines that cannot be parsed. (Errors will be logged)"
-                         Margin="10,0,10,0"/>
+                         Margin="10,0,10,0" />
         </StackPanel>
-
 
         <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" MaxWidth="450">
             <Button Grid.Row="1" Style="{StaticResource GeneralBtnStyle}"
                     Click="FileSelectBtn_Click">
                 Select File
             </Button>
-            <Button  x:Name="ProcessBtn"  
+            <Button  x:Name="ProcessBtn"
                 IsEnabled="False" Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="ProcessBtn_Click">
                 Process Data
             </Button>
-            <Button  x:Name="SaveBtn" IsEnabled="False"  
+            <Button  x:Name="SaveBtn" IsEnabled="False"
                 Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="SaveBtn_Click">
-                Database Insert 
+                Database Insert
             </Button>
-            <Button  x:Name="DataViewerBtn" 
+            <Button  x:Name="DataViewerBtn"
                 Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="DataViewerBtn_Click">
-               Data Viewer
+                Data Viewer
             </Button>
         </StackPanel>
 
@@ -165,15 +157,15 @@
             </TextBlock>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="4" 
+        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="4"
                       x:Name="ConsoleScroller"
                       Background="Black"
-                      Foreground="AntiqueWhite" 
-                      VerticalAlignment="Stretch" 
+                      Foreground="AntiqueWhite"
+                      VerticalAlignment="Stretch"
                       Height="Auto"
                       Padding="10">
             <StackPanel x:Name="OutputPanel"  TextBlock.FontSize="12">
-                <TextBlock Text="Output:"/>
+                <TextBlock Text="Output:" />
             </StackPanel>
         </ScrollViewer>
 
@@ -187,6 +179,5 @@
                 Print Help
             </Button>
         </StackPanel>
-       
     </Grid>
 </Window>

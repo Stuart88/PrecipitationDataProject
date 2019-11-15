@@ -12,7 +12,7 @@ namespace PrecipitationDataApp_WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region Public Constructors
+        #region Constructors
 
         public MainWindow()
         {
@@ -28,16 +28,16 @@ namespace PrecipitationDataApp_WPF
             };
         }
 
-        #endregion Public Constructors
+        #endregion Constructors
 
-        #region Public Properties
+        #region Properties
 
         public FileHandler FileHandler { get; set; } = new FileHandler(ErrorHandlingEnum.FailOnError);
         public string SelectedFilePath { get; set; }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Private Methods
+        #region Methods
 
         private void ClearConsoleBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -104,6 +104,26 @@ namespace PrecipitationDataApp_WPF
             }
         }
 
+        private void PrintHelpBtn_Click(object sender, RoutedEventArgs e)
+        {
+            PrintHelpString();
+        }
+
+        private void PrintHelpString()
+        {
+            string helpString = "\nPrecpitation Data File Parser\n\n" +
+               "Instructions:\n" +
+               "1. Select file\n" +
+               "2. Process Data\n" +
+               "3. Insert into Database\n" +
+               "4. View in Data Viewer\n\n" +
+               "Error Handling Options:\n\n" +
+               " - Fail on error: Program will terminate with an error message if any data cannot be parsed.\n\n" +
+               " - Bypass errors: Skip lines that cannot be parsed. (Errors will be logged)\n";
+
+            ConsoleLog(helpString);
+        }
+
         private void ProcessBtn_Click(object sender, RoutedEventArgs e)
         {
             ConsoleLog("\n\nProcessing...");
@@ -127,6 +147,20 @@ namespace PrecipitationDataApp_WPF
                 ConsoleLog(processingResult.resultMessage);
 
                 _ = MessageBox.Show(processingResult.resultMessage, "File Error!");
+            }
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            switch (((RadioButton)sender).Tag)
+            {
+                case "Fail":
+                    FileHandler.ErrorHandling = ErrorHandlingEnum.FailOnError;
+                    break;
+
+                case "Bypass":
+                    FileHandler.ErrorHandling = ErrorHandlingEnum.Bypass;
+                    break;
             }
         }
 
@@ -176,39 +210,6 @@ namespace PrecipitationDataApp_WPF
             }
         }
 
-        #endregion Private Methods
-
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            switch (((RadioButton)sender).Tag)
-            {
-                case "Fail":
-                    FileHandler.ErrorHandling = ErrorHandlingEnum.FailOnError;
-                    break;
-                case "Bypass":
-                    FileHandler.ErrorHandling = ErrorHandlingEnum.Bypass;
-                    break;
-            }
-        }
-
-        private void PrintHelpBtn_Click(object sender, RoutedEventArgs e)
-        {
-            PrintHelpString();
-        }
-
-        private void PrintHelpString()
-        {
-            string helpString = "\nPrecpitation Data File Parser\n\n" +
-               "Instructions:\n" +
-               "1. Select file\n" +
-               "2. Process Data\n" +
-               "3. Insert into Database\n" +
-               "4. View in Data Viewer\n\n" +
-               "Error Handling Options:\n\n" +
-               " - Fail on error: Program will terminate with an error message if any data cannot be parsed.\n\n" +
-               " - Bypass errors: Skip lines that cannot be parsed. (Errors will be logged)\n";
-
-            ConsoleLog(helpString);
-        }
+        #endregion Methods
     }
 }
