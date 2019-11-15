@@ -194,22 +194,6 @@ namespace PrecipitationDataHandling
         }
 
         /// <summary>
-        /// Returns extracted grid ref data
-        /// </summary>
-        /// <returns></returns>
-        private List<DataPoint> GetDataPoints()
-        {
-            if (FileData.DataPoints.Count > 0)
-            {
-                return FileData.DataPoints;
-            }
-            else
-            {
-                throw new FileHandlerException("No data! First run CreateDataPoints() to process file.");
-            }
-        }
-
-        /// <summary>
         /// Processes all lines of input file. Extracts header details ands stores as PrecipiationFileData properties,
         /// then returns list of remaining "Grid-ref" lines for further processing.
         /// </summary>
