@@ -97,7 +97,7 @@ namespace PrecipitationDataHandling
                 string[] file = File.ReadAllLines(FilePath);
 
                 CurrentLineNumber = 0;
-                List<(string line, bool isGridRedHeader)> gridRefLines = PreliminaryProcess(file);
+                List<(string line, bool isGridRefHeader)> gridRefLines = PreliminaryProcess(file);
 
                 int xRef = 0;
                 int yRef = 0;
@@ -107,11 +107,12 @@ namespace PrecipitationDataHandling
                 {
                     CurrentLineNumber++;
 
-                    if (g.isGridRedHeader)
+                    if (g.isGridRefHeader)
                     {
                         (xRef, yRef) = Functions.ParseEntry_Int(g.line, "Grid-ref=");
-                        //reset back to min year.
-                        currentYear = FileData.Years.Min;
+
+                        currentYear = FileData.Years.Min;  //reset back to min year.
+                        
                         continue;
                     }
                     else
@@ -252,6 +253,11 @@ namespace PrecipitationDataHandling
             return returnList;
         }
 
+        /// <summary>
+        /// Make note of error then  bypass or terminate, depending on ErrorHandling option in use
+        /// </summary>
+        /// <param name="line"></param>
+        /// <param name="message"></param>
         private void ProcessGridRefLineError(string line, string message)
         {
             switch (this.ErrorHandling)
@@ -265,8 +271,8 @@ namespace PrecipitationDataHandling
         }
 
         /// <summary>
-        /// Processes GridRef data value line. Splits up entries into List, cycles over list and adds each value as complete DataPoint entry
-        /// using given xRef, yRef and currentYear
+        /// <para>Processes GridRef data value line. Splits up entries into List of ints;</para> 
+        /// <para>loops over list and adds each value as new DataPoint entry with given xRef, yRef and currentYear</para>
         /// </summary>
         /// <param name="xRef"></param>
         /// <param name="yRef"></param>
@@ -281,20 +287,19 @@ namespace PrecipitationDataHandling
             if (rawLine.Any(c => char.IsLetter(c)))
             {
                 ProcessGridRefLineError(rawLine, "Line contains data that cannot be handled");
-
-                //Will continue if ErrorHandling is set to bypass. End here (returns empty list)
                 return points;
             }
 
             //split into list of ints, and process if possible
             List<int> gridRefValues = Functions.SplitLineIntoValues(rawLine);
+
             if (gridRefValues.Count < 12)
             {
                 ProcessGridRefLineError(rawLine, "Not enough data points in line (12 required)");
             }
             else
             {
-                //loop over months and process. Add value for each data point from Jan - Dec
+                //loop over months and process. Add value for each data point (representing Jan - Dec)
                 for (int i = 1; i <= 12; i++)
                 {
                     points.Add(new DataPoint(xRef, yRef, new DateTime(currentYear, i, 1), gridRefValues[i - 1]));
