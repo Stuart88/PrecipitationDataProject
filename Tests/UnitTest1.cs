@@ -53,9 +53,13 @@ namespace UnitTests
 
                 var saveresult = await handler.SaveData();
 
+                System.Diagnostics.Debug.WriteLine(handler.GetErrorLinesData());
+
                 Assert.IsTrue(saveresult.ok);
                 Assert.IsTrue(saveresult.totalSaved > 0);
                 Assert.IsTrue(saveresult.missed == 0);
+
+
             }
         }
 
@@ -101,6 +105,7 @@ namespace UnitTests
 
             Assert.IsTrue(Enumerable.SequenceEqual(expected, result));
         }
+
 
         #endregion Methods
     }

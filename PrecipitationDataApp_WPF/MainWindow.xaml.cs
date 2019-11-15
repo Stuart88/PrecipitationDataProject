@@ -199,12 +199,10 @@ namespace PrecipitationDataApp_WPF
         private void ViewDatabaseFileBtn_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.SaveFileDialog saveDialog = new Microsoft.Win32.SaveFileDialog();
+
             saveDialog.FileName = "PrecipitationDB";
             saveDialog.DefaultExt = ".db";
             saveDialog.Filter = "Database fle (.db)|*.db";
-            //saveDialog.CheckFileExists = false;
-            //saveDialog.CheckFileExists = false;
-            //saveDialog.CreatePrompt = true;
 
             if (saveDialog.ShowDialog() == true)
             {

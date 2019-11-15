@@ -85,11 +85,17 @@ namespace PrecipitationDataHandling
 
         public static (float, float) ToTuple(this float[] data)
         {
+            if (data.Length != 2)
+                throw new FileHandlerException("ToTuple() Error - Input data does not contain enough entries");
+            
             return (data[0], data[1]);
         }
 
         public static (int, int) ToTuple(this int[] data)
         {
+            if (data.Length != 2)
+                throw new FileHandlerException("ToTuple() Error - Input data does not contain enough entries");
+
             return (data[0], data[1]);
         }
 

@@ -2,7 +2,7 @@
 
 namespace PrecipitationDataHandling
 {
-    public class PrecipiationFileData
+    public class PrecipitationFileData
     {
         #region Properties
 

@@ -25,7 +25,7 @@ namespace PrecipitationDataHandling
     {
         #region Fields
 
-        public PrecipiationFileData FileData = new PrecipiationFileData();
+        public PrecipitationFileData FileData = new PrecipitationFileData();
 
         private int CurrentLineNumber = 0;
         private List<ErrorLine> ErrorLines = new List<ErrorLine>();
@@ -194,7 +194,7 @@ namespace PrecipitationDataHandling
         }
 
         /// <summary>
-        /// Processes all lines of input file. Extracts header details ands stores as PrecipiationFileData properties,
+        /// Processes all lines of input file. Extracts header details ands stores as PrecipitationFileData properties,
         /// then returns list of remaining "Grid-ref" lines for further processing.
         /// </summary>
         /// <param name="file"></param>
