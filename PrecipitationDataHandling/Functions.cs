@@ -81,6 +81,18 @@ namespace PrecipitationDataHandling
         {
             return string.Format("[{0}, {1}]", tuple.Item1, tuple.Item2);
         }
+
+        public static string[] ToArray(this MatchCollection matches)
+        {
+            string[] result = new string[matches.Count];
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                result[i] = matches[i].Value;
+            }
+
+            return result;
+        }
     }
 
 

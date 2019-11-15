@@ -31,7 +31,7 @@ namespace PrecipitationDataApp_WPF
 
                 if(DataPoints.Count == 0)
                 {
-                    LoadingText.Text = "No data!";
+                    LoadingText.Text = "No data! First process and insert data from file.";
                 }
                 else
                 {

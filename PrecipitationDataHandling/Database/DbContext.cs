@@ -25,7 +25,7 @@ namespace PrecipitationDataHandling.Database
         }
         public static async Task<int> InsertDataPoint(DataPoint data)
         {
-            DataPoint adding = new DataPoint(data);
+            DataPoint adding = new DataPoint(data); // ensure new data point (no ID)
 
             return await db.InsertAsync(adding);
         }

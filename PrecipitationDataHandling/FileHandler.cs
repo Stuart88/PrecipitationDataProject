@@ -16,68 +16,41 @@ namespace PrecipitationDataHandling
         FailOnError,
 
         /// <summary>
-        /// Bypass processing. Add note in FailedLines
+        /// Bypass processing. Add note in FailedLines list
         /// </summary>
         Bypass
     }
 
     public class FileHandler
     {
-        #region Private Fields
+        #region Fields
+
+        public PrecipiationFileData FileData = new PrecipiationFileData();
 
         private int CurrentLineNumber = 0;
         private List<ErrorLine> ErrorLines = new List<ErrorLine>();
-        public PrecipiationFileData FileData = new PrecipiationFileData();
         private string FilePath;
 
-        #endregion Private Fields
+        #endregion Fields
 
-        #region Public Constructors
+        #region Constructors
+
         public FileHandler(string filePath, ErrorHandlingEnum errorHandling = ErrorHandlingEnum.Bypass)
         {
             FilePath = filePath;
             ErrorHandling = errorHandling;
             DbContext.InitialiseDataBase();
         }
+
         public FileHandler(ErrorHandlingEnum errorHandling = ErrorHandlingEnum.Bypass)
         {
             ErrorHandling = errorHandling;
             DbContext.InitialiseDataBase();
         }
-        public int ErrorCount {get{ return ErrorLines.Count; } }
 
-        public string GetErrorLinesData()
-        {
-            string returnString = "";
+        #endregion Constructors
 
-            foreach(var e in ErrorLines)
-            {
-                returnString += string.Format("Line: {0}\nReason: {1}\nRaw Data: {2}\n\n", e.LineNumber, e.Reason, e.Line);
-            }
-
-            return returnString;
-        }
-
-        #endregion Public Constructors
-
-        public void  SetInputFilePath(string filePath)
-        {
-            FilePath = filePath;
-        }
-
-        /// <summary>
-        /// Saves precipitation data to Excel file
-        /// </summary>
-        /// <param name="outputFilename">Desired file name. Does NOT require file extension</param>
-        /// <returns>Saved file path</returns>
-        public string ToExcelSheet(string outputFilename)
-        {
-            List<DataPointExport> dataPoints_excel = FileData.DataPoints.Take(1000).Select(s => new DataPointExport(s)).ToList();
-
-            return Exporter.ToExcelFile(Exporter.ConvertToDataTable(dataPoints_excel), outputFilename);
-        }
-
-        #region Private Enums
+        #region Enums
 
         private enum ProcessingLineNumber
         {
@@ -89,9 +62,12 @@ namespace PrecipitationDataHandling
             GridRefLines
         }
 
-        #endregion Private Enums
+        #endregion Enums
 
-        #region Public Properties
+        #region Properties
+
+        public int DataCount { get { return FileData.DataPoints.Count; } }
+        public int ErrorCount { get { return ErrorLines.Count; } }
 
         /// <summary>
         /// Action to take when program encounters an issue in one of the precipitation data lines
@@ -100,29 +76,15 @@ namespace PrecipitationDataHandling
 
         public bool FileExists { get { return File.Exists(FilePath); } }
 
-        #endregion Public Properties
+        #endregion Properties
 
-        #region Public Methods
+        #region Methods
+
         /// <summary>
-        /// Read top lines of file to find title and other data.
+        /// Attempts to create data points from input file
         /// </summary>
         /// <returns></returns>
-        public (bool ok, string message) ParseBasicFileData()
-        {
-            try
-            {
-                _ = PreliminaryProcess(File.ReadAllLines(FilePath));
-
-                return (true, "");
-            }
-            catch (Exception e)
-            {
-                return (false, e.Message);
-            }
-        }
-
-
-        public (bool ok, string message) CreateDataPoints()
+        public (bool ok, string resultMessage) CreateDataPoints()
         {
             if (!FileExists)
                 return (false, "File not found!");
@@ -161,13 +123,93 @@ namespace PrecipitationDataHandling
 
                 return (true, "");
             }
+            catch (FileHandlerException e_fh)
+            {
+                return (false, string.Format("Error parsing data, please check Line {0}\n\nMessage:\n{1}", CurrentLineNumber, e_fh.Message));
+            }
             catch (Exception e)
             {
-                return (false, e.Message);
+                return (false, string.Format("Error parsing data, please check Line {0}\n\nMessage:\n{1}", CurrentLineNumber, e.Message));
             }
         }
 
-        public List<DataPoint> GetDataPoints()
+        /// <summary>
+        /// Returns single string of all error data, formatted for console output
+        /// </summary>
+        /// <returns></returns>
+        public string GetErrorLinesData()
+        {
+            string returnString = "";
+
+            foreach (var e in ErrorLines)
+            {
+                returnString += string.Format("Line: {0}\nReason: {1}\nRaw Data: {2}\n\n", e.LineNumber, e.Reason, e.Line);
+            }
+
+            return returnString;
+        }
+
+        /// <summary>
+        /// Read top lines of file to find title and other data.
+        /// </summary>
+        /// <returns></returns>
+        public (bool ok, string message) ParseBasicFileData()
+        {
+            try
+            {
+                CurrentLineNumber = 0;
+                _ = PreliminaryProcess(File.ReadAllLines(FilePath));
+
+                return (true, "");
+            }
+            catch (FileHandlerException e_fh)
+            {
+                return (false, string.Format("Error parsing file info, please check Line {0}\n\nMessage:\n{1}", CurrentLineNumber, e_fh.Message));
+            }
+            catch (Exception e)
+            {
+                return (false, string.Format("Error parsing file info, please check Line {0}\n\nMessage:\n {1}", CurrentLineNumber, e.Message));
+            }
+        }
+
+        public async Task<(int totalSaved, int missed, bool ok, string message)> SaveData()
+        {
+            try
+            {
+                DbContext.TruncateDataPointsTable();    // Do this to avoid re-saving all the data each time SaveData() is called.
+                                                        //This is obviously unrealistic, but it's good enough for what this application is supposed to do.
+                int savedAmount = await DbContext.BulkInsertDataPoints(FileData.DataPoints);
+
+                return (savedAmount, FileData.DataPoints.Count - savedAmount, true, "");
+            }
+            catch (Exception e)
+            {
+                return (0, 0, false, e.Message);
+            }
+        }
+
+        public void SetInputFilePath(string filePath)
+        {
+            FilePath = filePath;
+        }
+
+        /// <summary>
+        /// Saves precipitation data to Excel file
+        /// </summary>
+        /// <param name="outputFilename">Desired file name. Does NOT require file extension</param>
+        /// <returns>Saved file path</returns>
+        public string ToExcelSheet(string outputFilename)
+        {
+            List<DataPointExport> dataPoints_excel = FileData.DataPoints.Take(1000).Select(s => new DataPointExport(s)).ToList();
+
+            return Exporter.ToExcelFile(Exporter.ConvertToDataTable(dataPoints_excel), outputFilename);
+        }
+
+        /// <summary>
+        /// Returns extracted grid ref data
+        /// </summary>
+        /// <returns></returns>
+        private List<DataPoint> GetDataPoints()
         {
             if (FileData.DataPoints.Count > 0)
             {
@@ -178,27 +220,6 @@ namespace PrecipitationDataHandling
                 throw new FileHandlerException("No data! First run CreateDataPoints() to process file.");
             }
         }
-
-        public async Task<(int saved, int missed, bool ok, string message)> SaveData()
-        {
-
-            try
-            {
-                DbContext.TruncateDataPointsTable();    // Do this to avoid re-saving all the data each time SaveData() is called. 
-                                                        //This is obviously unrealistic, but it's good enough for what this application is supposed to do.
-                int savedAmount = await DbContext.BulkInsertDataPoints(FileData.DataPoints);
-
-                return (savedAmount, FileData.DataPoints.Count - savedAmount, true, "");
-            }
-            catch(Exception e)
-            {
-                return (0, 0, false, e.Message);
-            }
-        }
-
-        #endregion Public Methods
-
-        #region Private Methods
 
         /// <summary>
         /// Processes all lines of input file. Extracts header details ands stores as PrecipiationFileData properties,
@@ -213,8 +234,6 @@ namespace PrecipitationDataHandling
 
             foreach (string line in file)    // Process by line.
             {
-               
-
                 switch (currentLine)
                 {
                     case ProcessingLineNumber.TitleLine:
@@ -235,7 +254,7 @@ namespace PrecipitationDataHandling
 
                     case ProcessingLineNumber.LongLatGrid:
                         CurrentLineNumber++;
-                        ProcessLine_LangLatGridLine(line);
+                        ProcessLine_LongLatGridLine(line);
                         currentLine = ProcessingLineNumber.BoxesYearsMulti;
                         break;
 
@@ -266,7 +285,7 @@ namespace PrecipitationDataHandling
             switch (this.ErrorHandling)
             {
                 case ErrorHandlingEnum.FailOnError:
-                    throw new FileHandlerException(string.Format("\n\nError on line {0}:\nReason: {1}\nRaw Data:{2}\nProgram terminated\n\n", CurrentLineNumber, message, line));
+                    throw new FileHandlerException(string.Format("\nError on line {0}\nReason: {1}\nRaw Data:\n\"{2}\"\n\nProgram terminated\n\nUse the 'Bypass errors' setting to skip data lines that cannot be parsed \n\n", CurrentLineNumber, message, line));
                 case ErrorHandlingEnum.Bypass:
                     ErrorLines.Add(new ErrorLine(this.CurrentLineNumber, line, message));
                     break;
@@ -319,7 +338,10 @@ namespace PrecipitationDataHandling
         /// <param name="line"></param>
         private void ProcessLine_BoxesYearsMulti(string line)
         {
-            if (SplitLine(line, out string[] entries))
+            string[] entries = SplitLine(line);
+            string[] required = new string[4] { "Boxes=", "Years=", "Multi=", "Missing=" };
+
+            if (entries.Length == 4 && entries.All(x => required.Any(r => x.StartsWith(r)))) //all entries must start with one of the required labels
             {
                 FileData.Boxes = int.Parse(entries[0].Replace("Boxes=", ""));
                 FileData.Years = Functions.ParseEntry_Int(entries[1], "Years=");
@@ -336,11 +358,12 @@ namespace PrecipitationDataHandling
         /// Parses and stores data from 'Long / Lat / GridXY' line of file
         /// </summary>
         /// <param name="line"></param>
-        private void ProcessLine_LangLatGridLine(string line)
+        private void ProcessLine_LongLatGridLine(string line)
         {
-            //string[] entries = SplitLine(line); // result e.g. --->  { "Long=-180.00, 180.00", "Lati= -90.00,  90.00", "Grid X,Y= 720, 360" }
+            string[] entries = SplitLine(line);
+            string[] required = new string[3] { "Long=", "Lati=", "Grid X,Y=" };
 
-            if (SplitLine(line, out string[] entries))
+            if (entries.Length == 3 && entries.All(x => required.Any(r => x.StartsWith(r)))) //all entries must start with one of the required labels
             {
                 FileData.LongRange = Functions.ParseEntry_Float(entries[0], "Long=");
                 FileData.LatRange = Functions.ParseEntry_Float(entries[1], "Lati=");
@@ -358,63 +381,18 @@ namespace PrecipitationDataHandling
         /// <para>becomes { "Long=-180.00, 180.00", "Lati= -90.00,  90.00", "Grid X,Y= 720, 360" }</para>
         /// </summary>
         /// <param name="line"></param>
-        /// <param name="entries"></param>
         /// <returns></returns>
-        private bool SplitLine(string line, out string[] entries)
+        private string[] SplitLine(string line)
         {
-            try
-            {
-                entries = Regex.Split(string.Format("] {0} [", line), @"\] \[", RegexOptions.IgnoreCase)
-                .Where(x => !string.IsNullOrEmpty(x))   //Remove empty values left by Regex split
-                .ToArray();
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                entries = new string[] { };
-                return false;
-            }
+            return Regex.Matches(line, @"(?<=\[).*?(?=\])").ToArray();
         }
 
-        #endregion Private Methods
-
-        #region Public Classes
-
-        [Serializable]
-        public class FileHandlerException : Exception
-        {
-            #region Public Constructors
-
-            public FileHandlerException()
-            {
-            }
-
-            public FileHandlerException(string message) : base(message)
-            {
-            }
-
-            public FileHandlerException(string message, Exception inner) : base(message, inner)
-            {
-            }
-
-            #endregion Public Constructors
-
-            #region Protected Constructors
-
-            protected FileHandlerException(
-              System.Runtime.Serialization.SerializationInfo info,
-              System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
-
-            #endregion Protected Constructors
-        }
-
-        #endregion Public Classes
+        #endregion Methods
     }
 
     internal class ErrorLine
     {
-        #region Public Constructors
+        #region Constructors
 
         public ErrorLine(int lineNum, string line, string reason = "")
         {
@@ -423,14 +401,38 @@ namespace PrecipitationDataHandling
             Reason = reason;
         }
 
-        #endregion Public Constructors
+        #endregion Constructors
 
-        #region Public Properties
+        #region Properties
 
         public string Line { get; set; }
         public int LineNumber { get; set; }
         public string Reason { get; set; }
 
-        #endregion Public Properties
+        #endregion Properties
+    }
+
+    [Serializable]
+    internal class FileHandlerException : Exception
+    {
+        #region Constructors
+
+        public FileHandlerException()
+        {
+        }
+
+        public FileHandlerException(string message) : base(message)
+        {
+        }
+
+        public FileHandlerException(string message, Exception inner) : base(message, inner)
+        {
+        }
+
+        protected FileHandlerException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+
+        #endregion Constructors
     }
 }

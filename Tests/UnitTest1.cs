@@ -55,7 +55,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestFileHandlerCreateData()
+        public async void TestFileHandlerCreateData()
         {
             FileHandler handler = new FileHandler(@"G:\C#\JBA Test\jba-software-code-challenge-data-transformation\cru-ts-2-10.1991-2000-cutdown.pre");
 
@@ -65,10 +65,11 @@ namespace UnitTests
 
                 handler.CreateDataPoints();
 
-                var saveresult = handler.SaveData();
+                var saveresult = await handler.SaveData();
 
-
-                var result = handler.GetDataPoints();
+                Assert.IsTrue(saveresult.ok);
+                Assert.IsTrue(saveresult.totalSaved > 0);
+                Assert.IsTrue(saveresult.missed == 0);
             }
         }
 

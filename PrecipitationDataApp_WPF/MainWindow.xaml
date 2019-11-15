@@ -12,9 +12,9 @@
         <Style TargetType="Button" x:Key="GeneralBtnStyle">
             <Setter Property="Background" Value="CornflowerBlue"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="Width" Value="100"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Width" Value="90"/>
+            <Setter Property="Height" Value="25"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
         <Style TargetType="TextBlock" x:Key="FileDataLabel">
@@ -34,8 +34,9 @@
         </Style>
     </Window.Resources>
     
-    <Grid Margin="20" VerticalAlignment="Center" MaxHeight="450">
+    <Grid Margin="20" VerticalAlignment="Stretch" MinHeight="450">
         <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -48,25 +49,31 @@
         </Grid.ColumnDefinitions>
 
 
-        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="450">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" MaxWidth="450" VerticalAlignment="Stretch" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Padding="10"
+                    Margin="10"
+                    Background="#eee">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Precipitation Data File Parser" 
+                           FontSize="25"
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Center"/>
+
+                </StackPanel>
+            </Border>
             
-            <Button Grid.Column="0" Style="{StaticResource GeneralBtnStyle}"
-                    Click="FileSelectBtn_Click">
-                Select File
-            </Button>
-            <TextBlock Grid.Column="1"  x:Name="FileNameText"  FontSize="10"
-                       VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Background="#eee">
-               
-            </TextBlock>
+          
+
         </Grid>
 
-        <Grid x:Name="FileDataTextGrid" Grid.Row="1" Visibility="Hidden" 
-              HorizontalAlignment="Center" 
-              VerticalAlignment="Top"
+        <Grid x:Name="FileDataTextGrid" Grid.Row="1"
+              HorizontalAlignment="Stretch" 
+              VerticalAlignment="Stretch"
               MaxWidth="400"
               Background="#efeffe"
               Margin="0,20,20,20">
@@ -112,10 +119,23 @@
             
         </Grid>
 
-        
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" Margin="10">
+            <TextBlock Text="Error Handling: " VerticalAlignment="Center"/>
+            <RadioButton GroupName="ErrorOptions" IsChecked="True" Content="Fail on error" Checked="RadioButton_Checked" Tag="Fail"  VerticalAlignment="Center"
+                         ToolTipService.ToolTip="Program will terminate with an error message if any data cannot be parsed"
+                         Margin="10,0,10,0"/>
+            <RadioButton GroupName="ErrorOptions" IsChecked="False" Content="Bypass errors" Checked="RadioButton_Checked" Tag="Bypass"  VerticalAlignment="Center" 
+                         ToolTipService.ToolTip="Skip lines that cannot be parsed. (Errors will be logged)"
+                         Margin="10,0,10,0"/>
+        </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" MaxWidth="450">
-            <Button Grid.Row="3" Grid.Column="0" x:Name="ProcessBtn"  
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" MaxWidth="450">
+            <Button Grid.Row="1" Style="{StaticResource GeneralBtnStyle}"
+                    Click="FileSelectBtn_Click">
+                Select File
+            </Button>
+            <Button  x:Name="ProcessBtn"  
                 IsEnabled="False" Style="{StaticResource GeneralBtnStyle}" HorizontalAlignment="Center"
                 Click="ProcessBtn_Click">
                 Process Data
@@ -132,7 +152,7 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Vertical" TextBlock.LineHeight="23" Margin="10,10,0,0">
+        <StackPanel Grid.Row="4" Grid.Column="0" Orientation="Vertical" TextBlock.LineHeight="23" Margin="10,10,0,0">
             <TextBlock x:Name="ErrorsLinkText" Visibility="Hidden">
             <Hyperlink x:Name="ShowErrorsBtn" Click="ShowErrorsBtn_Click">
                 Print errors in console
@@ -145,21 +165,28 @@
             </TextBlock>
         </StackPanel>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" 
+        <ScrollViewer Grid.Row="0" Grid.Column="1" Grid.RowSpan="4" 
                       x:Name="ConsoleScroller"
                       Background="Black"
                       Foreground="AntiqueWhite" 
-                      VerticalAlignment="Top" 
-                      Height="300"
+                      VerticalAlignment="Stretch" 
+                      Height="Auto"
                       Padding="10">
-            <StackPanel x:Name="OutputPanel"  TextBlock.FontSize="10">
+            <StackPanel x:Name="OutputPanel"  TextBlock.FontSize="12">
                 <TextBlock Text="Output:"/>
             </StackPanel>
         </ScrollViewer>
 
-        <Button x:Name="ClearConsoleBtn" Grid.Row="3" Grid.Column="1" Click="ClearConsoleBtn_Click" Style="{StaticResource GeneralBtnStyle}"
-                HorizontalAlignment="Right" Width="100" Margin="0,5,0,0" VerticalAlignment="Top">
-            Clear Console
-        </Button>
+        <StackPanel Grid.Column="1"  Grid.Row="4" Orientation="Horizontal">
+            <Button x:Name="ClearConsoleBtn"  Click="ClearConsoleBtn_Click" Style="{StaticResource GeneralBtnStyle}"
+                HorizontalAlignment="Left" Width="100" Margin="0,5,10,0" VerticalAlignment="Top">
+                Clear Console
+            </Button>
+            <Button x:Name="PrintHelpBtn"   Click="PrintHelpBtn_Click" Style="{StaticResource GeneralBtnStyle}"
+                HorizontalAlignment="Left" Width="100" Margin="0,5,0,0" VerticalAlignment="Top">
+                Print Help
+            </Button>
+        </StackPanel>
+       
     </Grid>
 </Window>
