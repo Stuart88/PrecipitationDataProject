@@ -193,17 +193,7 @@ namespace PrecipitationDataHandling
             FilePath = filePath;
         }
 
-        /// <summary>
-        /// Saves precipitation data to Excel file
-        /// </summary>
-        /// <param name="outputFilename">Desired file name. Does NOT require file extension</param>
-        /// <returns>Saved file path</returns>
-        public string ToExcelSheet(string outputFilename)
-        {
-            List<DataPointExport> dataPoints_excel = FileData.DataPoints.Take(1000).Select(s => new DataPointExport(s)).ToList();
-
-            return Exporter.ToExcelFile(Exporter.ConvertToDataTable(dataPoints_excel), outputFilename);
-        }
+       
 
         /// <summary>
         /// Returns extracted grid ref data
@@ -413,7 +403,7 @@ namespace PrecipitationDataHandling
     }
 
     [Serializable]
-    internal class FileHandlerException : Exception
+    public class FileHandlerException : Exception
     {
         #region Constructors
 

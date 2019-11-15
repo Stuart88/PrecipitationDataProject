@@ -81,7 +81,6 @@
   <ItemGroup>
     <Compile Include="Database\DbContext.cs" />
     <Compile Include="Database\DbQuery.cs" />
-    <Compile Include="Database\Exporter.cs" />
     <Compile Include="DataPoint.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="PrecipiationFileData.cs" />
